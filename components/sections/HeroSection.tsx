@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { FaLinkedin, FaFacebook, FaYoutube, FaTwitter } from 'react-icons/fa';
 import { ChevronDown } from 'lucide-react';
 
@@ -15,7 +14,8 @@ export default function HeroSection({ settings }: Props) {
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
-    setTimeout(() => el.classList.add('hero-loaded'), 100);
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
   }, []);
 
   const scrollToAbout = () => {
@@ -63,11 +63,15 @@ export default function HeroSection({ settings }: Props) {
       {/* Grain overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-near-black via-near-black/95 to-near-black pointer-events-none" />
 
+      {/* FIXED: removed opacity:0 — now visible immediately */}
       <div
         ref={heroRef}
         className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center"
-        style={{ opacity: 0, transition: 'opacity 1s ease' }}
-        onLoad={(e) => (e.currentTarget.style.opacity = '1')}
+        style={{
+          opacity: 1,
+          transform: 'translateY(0)',
+          transition: 'opacity 0.8s ease, transform 0.8s ease',
+        }}
       >
         {/* Text Content */}
         <div className="space-y-6">
@@ -150,7 +154,6 @@ export default function HeroSection({ settings }: Props) {
             {/* Profile image container */}
             <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-2 border-wine/50 shadow-2xl shadow-wine/20">
               <div className="w-full h-full bg-gradient-to-br from-wine/40 to-deep-wine flex items-center justify-center">
-                {/* Placeholder - replace with actual image */}
                 <div className="text-center">
                   <div className="font-bebas text-7xl text-blush/20 leading-none">DMR</div>
                   <p className="text-blush/30 text-xs mt-2 tracking-widest">ADD PHOTO IN ADMIN</p>
@@ -158,7 +161,7 @@ export default function HeroSection({ settings }: Props) {
               </div>
             </div>
 
-            {/* Floating badge */}
+            {/* Floating badges */}
             <div className="absolute -bottom-4 -left-4 bg-deep-wine border border-wine/50 rounded-2xl px-4 py-3 shadow-lg">
               <p className="font-bebas text-rose text-2xl leading-none">3+</p>
               <p className="text-blush/60 text-[10px] tracking-wider uppercase">Years Design</p>
