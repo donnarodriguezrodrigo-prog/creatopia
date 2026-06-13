@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import CreatopiaLogo from './CreatopiaLogo';
 
 const navLinks = [
   { href: '#home', label: 'Home' },
@@ -21,8 +21,6 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-
-      // Update active section
       const sections = navLinks.map((l) => l.href.replace('#', ''));
       for (const section of [...sections].reverse()) {
         const el = document.getElementById(section);
@@ -57,9 +55,7 @@ export default function Navbar() {
           onClick={() => handleNavClick('#home')}
           className="flex items-center gap-3 group"
         >
-          <div className="w-9 h-9 rounded-lg bg-wine/20 border border-wine/40 flex items-center justify-center group-hover:bg-wine/40 transition-colors">
-            <span className="font-bebas text-rose text-lg leading-none">C</span>
-          </div>
+          <CreatopiaLogo size={38} />
           <div className="flex flex-col leading-none">
             <span className="font-bebas text-blush text-xl tracking-widest">CREATOPIA</span>
             <span className="text-rose/70 text-[9px] tracking-[0.2em] uppercase font-montserrat">
@@ -86,53 +82,72 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* CTA Button */}
-        <button
-          onClick={() => handleNavClick('#contact')}
-          className="hidden md:block px-5 py-2 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all duration-300"
-        >
-          Hire Me
-        </button>
+        {/* CTA + Hamburger */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => handleNavClick('#contact')}
+            className="hidden md:block px-5 py-2 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all duration-300"
+          >
+            Hire Me
+          </button>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-blush p-1"
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {/* Hamburger button */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl border border-wine/30 bg-wine/10 text-blush hover:border-rose/50 hover:bg-wine/30 transition-all"
+            aria-label="Toggle menu"
+          >
+            <span
+              className={`absolute transition-all duration-300 ${
+                menuOpen ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90'
+              }`}
+            >
+              <X size={20} />
+            </span>
+            <span
+              className={`absolute transition-all duration-300 ${
+                menuOpen ? 'opacity-0 -rotate-90' : 'opacity-100 rotate-0'
+              }`}
+            >
+              <Menu size={20} />
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-near-black/98 backdrop-blur-md border-t border-wine/20 px-6 py-6">
-          <ul className="flex flex-col gap-5">
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ${
+          menuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="bg-near-black/98 backdrop-blur-md border-t border-wine/20 px-6 py-6">
+          <ul className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <button
                   onClick={() => handleNavClick(link.href)}
-                  className={`text-sm tracking-widest uppercase font-semibold transition-colors w-full text-left ${
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm tracking-widest uppercase font-semibold transition-all ${
                     activeSection === link.href.replace('#', '')
-                      ? 'text-rose'
-                      : 'text-blush/70'
+                      ? 'text-rose bg-wine/20'
+                      : 'text-blush/70 hover:text-blush hover:bg-wine/10'
                   }`}
                 >
                   {link.label}
                 </button>
               </li>
             ))}
-            <li>
+            <li className="pt-2">
               <button
                 onClick={() => handleNavClick('#contact')}
-                className="mt-2 w-full py-3 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold"
+                className="w-full py-3 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all"
               >
                 Hire Me
               </button>
             </li>
           </ul>
         </div>
-      )}
+      </div>
     </nav>
   );
 }

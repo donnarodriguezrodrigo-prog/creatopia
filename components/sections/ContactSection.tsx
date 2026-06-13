@@ -8,6 +8,8 @@ interface Props {
   settings: Record<string, string>;
 }
 
+const FORMSPREE_ID = 'xeewpgno';
+
 export default function ContactSection({ settings }: Props) {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [loading, setLoading] = useState(false);
@@ -17,13 +19,29 @@ export default function ContactSection({ settings }: Props) {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/contact', {
+      // Send to Formspree — you receive email notification
+      const formspreeRes = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+
+      // Also save to Supabase for admin inbox
+      await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      if (res.ok) {
-        toast.success('Message sent! I\'ll get back to you soon.');
+
+      if (formspreeRes.ok) {
+        toast.success("Message sent! I'll get back to you soon.");
         setForm({ name: '', email: '', message: '' });
       } else {
         toast.error('Failed to send. Please try again.');
