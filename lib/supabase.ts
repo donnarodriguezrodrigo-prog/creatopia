@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = "https://kgqhunnwlcztxxtrwdwp.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtncWh1bm53bGN6dHh4dHJ3ZHdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDgwMzksImV4cCI6MjA5NjgyNDAzOX0._cCjHto-3L6NnM1cWBV6wbxldIdxoecjyPjCfgIm63Y";
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Server-side client with service role (for admin operations)
