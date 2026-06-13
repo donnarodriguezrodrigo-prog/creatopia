@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Protect all /admin/* routes except /admin (login page)
-  if (pathname.startsWith('/admin/') && !pathname.startsWith('/admin/login')) {
+  // Only protect /admin/dashboard and deeper — NOT /admin (login) or /api routes
+  if (pathname.startsWith('/admin/dashboard')) {
     const session = req.cookies.get('admin_session');
     if (!session || session.value !== 'authenticated') {
       return NextResponse.redirect(new URL('/admin', req.url));
@@ -15,5 +15,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/dashboard/:path*'],
 };
