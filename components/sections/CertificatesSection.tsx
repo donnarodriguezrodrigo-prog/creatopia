@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
-import { ExternalLink, Award } from 'lucide-react';
+import { ExternalLink, Award, X } from 'lucide-react';
 import type { Certificate } from '@/lib/supabase';
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default function CertificatesSection({ items }: Props) {
+  const [selected, setSelected] = useState<Certificate | null>(null);
+
   return (
     <section id="certificates" className="relative py-24 bg-near-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-wine/40 to-transparent" />
@@ -41,8 +44,11 @@ export default function CertificatesSection({ items }: Props) {
                 key={cert.id}
                 className="premium-card group bg-deep-wine/20 border border-wine/20 rounded-2xl overflow-hidden hover:border-wine/50"
               >
-                {/* Certificate Image */}
-                <div className="relative aspect-[4/3] bg-near-black overflow-hidden">
+                {/* Certificate Image — click opens lightbox preview, never 404s */}
+                <button
+                  onClick={() => setSelected(cert)}
+                  className="relative aspect-[4/3] bg-near-black overflow-hidden w-full block"
+                >
                   {cert.image_url ? (
                     <Image
                       src={cert.image_url}
@@ -55,7 +61,7 @@ export default function CertificatesSection({ items }: Props) {
                       <Award size={40} className="text-wine/50" />
                     </div>
                   )}
-                </div>
+                </button>
 
                 {/* Content */}
                 <div className="p-5">
@@ -67,12 +73,14 @@ export default function CertificatesSection({ items }: Props) {
                       <p className="text-rose/70 text-xs tracking-wide mt-1">{cert.issuer}</p>
                       <p className="text-blush/40 text-xs mt-1">{cert.date}</p>
                     </div>
-                    {cert.credential_url && (
+                    {/* Only renders the external link icon if a real credential URL exists */}
+                    {cert.credential_url && cert.credential_url.trim() !== '' && (
                       <a
                         href={cert.credential_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-shrink-0 w-8 h-8 rounded-full border border-wine/30 flex items-center justify-center text-blush/40 hover:text-rose hover:border-rose transition-colors"
+                        title="View credential"
                       >
                         <ExternalLink size={12} />
                       </a>
@@ -84,6 +92,53 @@ export default function CertificatesSection({ items }: Props) {
           </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 z-[100] bg-near-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+          onClick={() => setSelected(null)}
+        >
+          <button
+            onClick={() => setSelected(null)}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-wine/30 border border-wine/50 flex items-center justify-center text-blush hover:bg-wine/60 transition-all"
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+
+          <div
+            className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-deep-wine/30 border border-wine/30 rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selected.image_url && (
+              <div className="relative w-full aspect-[4/3] bg-near-black">
+                <Image
+                  src={selected.image_url}
+                  alt={selected.title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
+            <div className="p-6">
+              <h3 className="font-bebas text-2xl text-blush tracking-wide">{selected.title}</h3>
+              <p className="text-rose/70 text-sm mt-1">{selected.issuer}</p>
+              <p className="text-blush/40 text-xs mt-1">{selected.date}</p>
+              {selected.credential_url && selected.credential_url.trim() !== '' && (
+                <a
+                  href={selected.credential_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all"
+                >
+                  <ExternalLink size={14} /> View Credential
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

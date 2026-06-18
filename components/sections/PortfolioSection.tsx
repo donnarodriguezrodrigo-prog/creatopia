@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
 import type { Portfolio } from '@/lib/supabase';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 export default function PortfolioSection({ items }: Props) {
   const categories = ['All', ...Array.from(new Set(items.map((i) => i.category)))];
   const [activeCategory, setActiveCategory] = useState('All');
+  const [selected, setSelected] = useState<Portfolio | null>(null);
 
   const filtered = activeCategory === 'All'
     ? items
@@ -65,9 +66,10 @@ export default function PortfolioSection({ items }: Props) {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((item) => (
-              <div
+              <button
                 key={item.id}
-                className="premium-card group relative rounded-2xl overflow-hidden bg-near-black border border-wine/20 hover:border-wine/50"
+                onClick={() => setSelected(item)}
+                className="premium-card group relative rounded-2xl overflow-hidden bg-near-black border border-wine/20 hover:border-wine/50 text-left"
               >
                 {/* Image */}
                 <div className="relative aspect-video overflow-hidden bg-deep-wine/30">
@@ -125,11 +127,68 @@ export default function PortfolioSection({ items }: Props) {
                     </div>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 z-[100] bg-near-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+          onClick={() => setSelected(null)}
+        >
+          <button
+            onClick={() => setSelected(null)}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-wine/30 border border-wine/50 flex items-center justify-center text-blush hover:bg-wine/60 transition-all"
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+
+          <div
+            className="max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-deep-wine/30 border border-wine/30 rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selected.image_url && (
+              <div className="relative w-full aspect-video bg-near-black">
+                <Image
+                  src={selected.image_url}
+                  alt={selected.title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
+            <div className="p-6">
+              <span className="text-rose/60 text-xs tracking-[0.2em] uppercase font-semibold">
+                {selected.category}
+              </span>
+              <h3 className="font-bebas text-3xl text-blush mt-1 tracking-wide">
+                {selected.title}
+              </h3>
+              {selected.description && (
+                <p className="text-blush/60 text-sm mt-3 leading-relaxed">
+                  {selected.description}
+                </p>
+              )}
+              {selected.tools && selected.tools.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {selected.tools.map((tool) => (
+                    <span
+                      key={tool}
+                      className="px-3 py-1 rounded-full bg-wine/20 border border-wine/30 text-blush/70 text-xs tracking-wide"
+                    >
+                      {tool}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
