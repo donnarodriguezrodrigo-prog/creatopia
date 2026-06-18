@@ -2,8 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { Lock, Eye, EyeOff } from 'lucide-react';
+
+const LOGO_URL = 'https://kgqhunnwlcztxxtrwdwp.supabase.co/storage/v1/object/public/logo/a077e282-5b39-4998-8cf5-0221070fef94.jpg';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
@@ -35,7 +38,6 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-near-black flex items-center justify-center px-4">
-      {/* Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-wine/10 blur-[120px] rounded-full" />
       </div>
@@ -43,14 +45,13 @@ export default function AdminLoginPage() {
       <div className="relative w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-wine/20 border border-wine/40 flex items-center justify-center mx-auto mb-4">
-            <span className="font-bebas text-rose text-3xl leading-none">C</span>
+          <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-blush/5 mx-auto mb-4">
+            <Image src={LOGO_URL} alt="Creatopia" fill className="object-contain" priority />
           </div>
           <h1 className="font-bebas text-3xl text-blush tracking-widest">CREATOPIA</h1>
           <p className="text-rose/60 text-xs tracking-[0.2em] uppercase mt-1">Admin Panel</p>
         </div>
 
-        {/* Login Form */}
         <div className="bg-deep-wine/30 border border-wine/20 rounded-2xl p-8">
           <div className="flex items-center gap-2 mb-6">
             <Lock size={16} className="text-rose/60" />

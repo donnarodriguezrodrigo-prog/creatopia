@@ -2,14 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import {
-  LayoutDashboard, Image, Award, DollarSign, MessageSquare,
+  LayoutDashboard, Image as ImageIcon, Award, DollarSign, MessageSquare,
   Settings, LogOut, Plus, Trash2, Edit2, Save, X, Upload,
-  ExternalLink, Eye, Star, ChevronDown, ChevronUp, RefreshCw
+  ExternalLink, Eye, Star, RefreshCw, User
 } from 'lucide-react';
 import type { Portfolio, Certificate, Service, ContactMessage } from '@/lib/supabase';
+
+const LOGO_URL = 'https://kgqhunnwlcztxxtrwdwp.supabase.co/storage/v1/object/public/logo/a077e282-5b39-4998-8cf5-0221070fef94.jpg';
 
 type Tab = 'overview' | 'portfolio' | 'certificates' | 'services' | 'messages' | 'settings';
 
@@ -23,23 +26,21 @@ export default function AdminDashboard() {
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
-  // Portfolio form
   const [portfolioForm, setPortfolioForm] = useState({
     title: '', description: '', category: 'Design', tools: '', featured: false, image_url: ''
   });
   const [editingPortfolio, setEditingPortfolio] = useState<string | null>(null);
 
-  // Certificate form
   const [certForm, setCertForm] = useState({
     title: '', issuer: '', date: '', image_url: '', credential_url: ''
   });
   const [editingCert, setEditingCert] = useState<string | null>(null);
 
-  // Settings form
   const [settingsForm, setSettingsForm] = useState<Record<string, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const certFileInputRef = useRef<HTMLInputElement>(null);
+  const profileFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadAllData();
@@ -73,7 +74,6 @@ export default function AdminDashboard() {
     router.push('/admin');
   };
 
-  // Upload image to Supabase Storage
   const uploadImage = async (file: File, bucket: string): Promise<string | null> => {
     const ext = file.name.split('.').pop();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
@@ -160,7 +160,6 @@ export default function AdminDashboard() {
     loadAllData();
   };
 
-  // ---- Mark message read ----
   const markRead = async (id: string) => {
     await supabase.from('contact_messages').update({ read: true }).eq('id', id);
     loadAllData();
@@ -170,7 +169,7 @@ export default function AdminDashboard() {
 
   const navItems: { id: Tab; label: string; icon: React.ElementType; badge?: number }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'portfolio', label: 'Portfolio', icon: Image },
+    { id: 'portfolio', label: 'Portfolio', icon: ImageIcon },
     { id: 'certificates', label: 'Certificates', icon: Award },
     { id: 'services', label: 'Services', icon: DollarSign },
     { id: 'messages', label: 'Messages', icon: MessageSquare, badge: unreadCount },
@@ -183,8 +182,8 @@ export default function AdminDashboard() {
       <aside className="w-60 bg-deep-wine/40 border-r border-wine/20 flex flex-col fixed top-0 left-0 bottom-0 z-40">
         <div className="p-5 border-b border-wine/20">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-wine/30 border border-wine/40 flex items-center justify-center">
-              <span className="font-bebas text-rose text-lg leading-none">C</span>
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-blush/5 flex-shrink-0">
+              <Image src={LOGO_URL} alt="Creatopia" fill className="object-contain" />
             </div>
             <div>
               <p className="font-bebas text-blush text-sm tracking-widest">CREATOPIA</p>
@@ -256,20 +255,19 @@ export default function AdminDashboard() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Portfolio Items', value: portfolio.length, icon: Image, color: 'wine' },
-                { label: 'Certificates', value: certificates.length, icon: Award, color: 'wine' },
-                { label: 'Services', value: services.length, icon: DollarSign, color: 'wine' },
-                { label: 'Messages', value: `${unreadCount} new`, icon: MessageSquare, color: unreadCount > 0 ? 'rose' : 'wine' },
+                { label: 'Portfolio Items', value: portfolio.length, icon: ImageIcon },
+                { label: 'Certificates', value: certificates.length, icon: Award },
+                { label: 'Services', value: services.length, icon: DollarSign },
+                { label: 'Messages', value: `${unreadCount} new`, icon: MessageSquare },
               ].map((stat) => (
                 <div key={stat.label} className="bg-deep-wine/30 border border-wine/20 rounded-2xl p-5">
-                  <stat.icon size={20} className={`text-${stat.color} mb-3`} />
+                  <stat.icon size={20} className="text-rose mb-3" />
                   <p className="font-bebas text-3xl text-blush">{stat.value}</p>
                   <p className="text-blush/50 text-xs tracking-wide mt-1">{stat.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Recent Messages */}
             {unreadCount > 0 && (
               <div className="bg-deep-wine/20 border border-wine/20 rounded-2xl p-6">
                 <h3 className="font-bebas text-xl text-rose mb-4 tracking-wide">NEW MESSAGES</h3>
@@ -298,7 +296,6 @@ export default function AdminDashboard() {
         {/* ---- PORTFOLIO ---- */}
         {activeTab === 'portfolio' && (
           <div className="space-y-6">
-            {/* Add/Edit Form */}
             <div className="bg-deep-wine/20 border border-wine/20 rounded-2xl p-6">
               <h3 className="font-bebas text-xl text-rose mb-5 tracking-wide">
                 {editingPortfolio ? 'EDIT ITEM' : 'ADD NEW ITEM'}
@@ -342,13 +339,13 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="admin-label">Image URL</label>
+                  <label className="admin-label">Image</label>
                   <div className="flex gap-2">
                     <input
                       className="admin-input flex-1"
                       value={portfolioForm.image_url}
                       onChange={e => setPortfolioForm({ ...portfolioForm, image_url: e.target.value })}
-                      placeholder="https://... or upload below"
+                      placeholder="Click upload button →"
                     />
                     <button
                       onClick={() => fileInputRef.current?.click()}
@@ -365,15 +362,19 @@ export default function AdminDashboard() {
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      toast.loading('Uploading...');
+                      toast.loading('Uploading...', { id: 'upload' });
                       const url = await uploadImage(file, 'portfolio');
-                      toast.dismiss();
+                      toast.dismiss('upload');
                       if (url) {
                         setPortfolioForm(f => ({ ...f, image_url: url }));
                         toast.success('Uploaded!');
                       }
                     }}
                   />
+                  {portfolioForm.image_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={portfolioForm.image_url} alt="Preview" className="mt-2 h-20 rounded-lg border border-wine/30 object-cover" />
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <input
@@ -407,7 +408,6 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Portfolio List */}
             <div className="bg-deep-wine/20 border border-wine/20 rounded-2xl overflow-hidden">
               <table className="w-full admin-table">
                 <thead>
@@ -479,9 +479,9 @@ export default function AdminDashboard() {
                   <input className="admin-input" value={certForm.credential_url} onChange={e => setCertForm({ ...certForm, credential_url: e.target.value })} placeholder="https://..." />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="admin-label">Image URL</label>
+                  <label className="admin-label">Image</label>
                   <div className="flex gap-2">
-                    <input className="admin-input flex-1" value={certForm.image_url} onChange={e => setCertForm({ ...certForm, image_url: e.target.value })} placeholder="https://..." />
+                    <input className="admin-input flex-1" value={certForm.image_url} onChange={e => setCertForm({ ...certForm, image_url: e.target.value })} placeholder="Click upload button →" />
                     <button
                       onClick={() => certFileInputRef.current?.click()}
                       className="px-3 py-2 rounded-xl bg-wine/30 border border-wine/40 text-blush/70 hover:text-rose hover:bg-wine/50 transition-all"
@@ -497,12 +497,16 @@ export default function AdminDashboard() {
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      toast.loading('Uploading...');
+                      toast.loading('Uploading...', { id: 'cert-upload' });
                       const url = await uploadImage(file, 'certificates');
-                      toast.dismiss();
+                      toast.dismiss('cert-upload');
                       if (url) { setCertForm(f => ({ ...f, image_url: url })); toast.success('Uploaded!'); }
                     }}
                   />
+                  {certForm.image_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={certForm.image_url} alt="Preview" className="mt-2 h-20 rounded-lg border border-wine/30 object-cover" />
+                  )}
                 </div>
               </div>
               <div className="flex gap-3 mt-5">
@@ -562,7 +566,7 @@ export default function AdminDashboard() {
         {/* ---- SERVICES ---- */}
         {activeTab === 'services' && (
           <div className="space-y-4">
-            <p className="text-blush/50 text-sm">Services are pre-seeded from the database. Edit directly in Supabase or update via the form below.</p>
+            <p className="text-blush/50 text-sm">Services are pre-seeded from the database. Edit directly in Supabase Table Editor for now.</p>
             {services.map(service => (
               <div key={service.id} className="bg-deep-wine/20 border border-wine/20 rounded-2xl p-5 flex items-start justify-between gap-4">
                 <div>
@@ -575,7 +579,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
-            <p className="text-blush/30 text-xs">To edit services, update the database directly in Supabase Studio.</p>
           </div>
         )}
 
@@ -616,6 +619,64 @@ export default function AdminDashboard() {
         {/* ---- SETTINGS ---- */}
         {activeTab === 'settings' && (
           <div className="space-y-6">
+            {/* Profile Photo Upload */}
+            <div className="bg-deep-wine/20 border border-wine/20 rounded-2xl p-6">
+              <h3 className="font-bebas text-xl text-rose mb-5 tracking-wide flex items-center gap-2">
+                <User size={18} /> PROFILE PHOTO
+              </h3>
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-wine/40 bg-near-black flex-shrink-0">
+                  {settingsForm.profile_image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={settingsForm.profile_image} alt="Profile" className="w-full h-full object-cover object-top" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-blush/20 text-xs">No photo</div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex gap-2">
+                    <input
+                      className="admin-input flex-1"
+                      value={settingsForm.profile_image || ''}
+                      onChange={e => setSettingsForm({ ...settingsForm, profile_image: e.target.value })}
+                      placeholder="Click upload →"
+                    />
+                    <button
+                      onClick={() => profileFileInputRef.current?.click()}
+                      className="px-4 py-2 rounded-xl bg-wine/30 border border-wine/40 text-blush/70 hover:text-rose hover:bg-wine/50 transition-all flex items-center gap-2"
+                    >
+                      <Upload size={16} /> Upload
+                    </button>
+                  </div>
+                  <input
+                    ref={profileFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      toast.loading('Uploading photo...', { id: 'profile-upload' });
+                      const url = await uploadImage(file, 'profile');
+                      toast.dismiss('profile-upload');
+                      if (url) {
+                        const updated = { ...settingsForm, profile_image: url };
+                        setSettingsForm(updated);
+                        await supabase.from('site_settings').upsert(
+                          { key: 'profile_image', value: url, updated_at: new Date().toISOString() },
+                          { onConflict: 'key' }
+                        );
+                        toast.success('Profile photo updated!');
+                        loadAllData();
+                      }
+                    }}
+                  />
+                  <p className="text-blush/30 text-xs mt-2">This appears in your hero section. Square images work best.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Other Settings */}
             <div className="bg-deep-wine/20 border border-wine/20 rounded-2xl p-6">
               <h3 className="font-bebas text-xl text-rose mb-5 tracking-wide">SITE SETTINGS</h3>
               <div className="grid md:grid-cols-2 gap-4">

@@ -60,14 +60,18 @@ CREATE TABLE IF NOT EXISTS site_settings (
 -- ============================================================
 -- Storage Buckets
 -- ============================================================
--- Run these in Supabase Storage or via API
--- 1. Create bucket: "portfolio" (public)
--- 2. Create bucket: "certificates" (public)
--- 3. Create bucket: "profile" (public)
+-- IMPORTANT: Create these buckets manually in Supabase Storage UI
+-- and make sure "Public bucket" toggle is ON for each:
+-- 1. "portfolio" (public)
+-- 2. "certificates" (public)
+-- 3. "profile" (public)
+-- 4. "logo" (public) — optional, for your brand logo image
 
 -- ============================================================
--- Row Level Security
+-- Row Level Security — FULL ACCESS POLICIES
 -- ============================================================
+-- These allow the admin panel (using anon key) to insert/update/delete.
+-- This is intentional since the admin panel itself is password protected.
 
 ALTER TABLE portfolio ENABLE ROW LEVEL SECURITY;
 ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
@@ -83,6 +87,13 @@ CREATE POLICY "Public read settings" ON site_settings FOR SELECT USING (true);
 
 -- Anyone can insert contact messages
 CREATE POLICY "Public insert contact" ON contact_messages FOR INSERT WITH CHECK (true);
+
+-- Admin panel full access (insert/update/delete via anon key, password-gated by app)
+CREATE POLICY "Admin full access portfolio" ON portfolio FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin full access certificates" ON certificates FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin full access services" ON services FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin full access settings" ON site_settings FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin full access messages" ON contact_messages FOR ALL USING (true) WITH CHECK (true);
 
 -- Service role can do everything (used by admin API routes)
 -- This is handled by the service role key bypass
@@ -131,4 +142,5 @@ INSERT INTO site_settings (key, value) VALUES
 ('twitter_url', 'https://twitter.com/'),
 ('youtube_url', 'https://youtube.com/'),
 ('email', 'donnarodriguezrodrigo@gmail.com'),
-('phone', '09664867545');
+('phone', '09664867545'),
+('profile_image', '');

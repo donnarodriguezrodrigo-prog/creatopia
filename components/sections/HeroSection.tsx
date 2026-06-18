@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { FaLinkedin, FaFacebook, FaYoutube, FaTwitter } from 'react-icons/fa';
 import { ChevronDown } from 'lucide-react';
 
@@ -22,12 +23,13 @@ export default function HeroSection({ settings }: Props) {
     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const profileImage = settings.profile_image || null;
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden bg-near-black"
     >
-      {/* Background wave lines (brand motif) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <svg
           className="absolute right-0 top-0 h-full w-1/2 opacity-20"
@@ -55,25 +57,17 @@ export default function HeroSection({ settings }: Props) {
             />
           ))}
         </svg>
-        {/* Radial glow */}
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-wine/10 blur-[120px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-deep-wine/20 blur-[80px]" />
       </div>
 
-      {/* Grain overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-near-black via-near-black/95 to-near-black pointer-events-none" />
 
-      {/* FIXED: removed opacity:0 — now visible immediately */}
       <div
         ref={heroRef}
         className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center"
-        style={{
-          opacity: 1,
-          transform: 'translateY(0)',
-          transition: 'opacity 0.8s ease, transform 0.8s ease',
-        }}
+        style={{ opacity: 1, transform: 'translateY(0)', transition: 'opacity 0.8s ease, transform 0.8s ease' }}
       >
-        {/* Text Content */}
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-wine/40 bg-wine/10 text-rose text-xs tracking-[0.2em] uppercase font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
@@ -103,7 +97,6 @@ export default function HeroSection({ settings }: Props) {
             solutions that elevate your brand and achieve your business objectives.
           </p>
 
-          {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 pt-2">
             <button
               onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}
@@ -119,7 +112,6 @@ export default function HeroSection({ settings }: Props) {
             </button>
           </div>
 
-          {/* Social Links */}
           <div className="flex items-center gap-4 pt-2">
             <span className="text-blush/30 text-xs tracking-widest uppercase">Follow</span>
             <div className="h-px w-8 bg-wine/30" />
@@ -146,22 +138,29 @@ export default function HeroSection({ settings }: Props) {
         {/* Photo */}
         <div className="relative flex justify-center md:justify-end">
           <div className="relative">
-            {/* Decorative rings */}
             <div className="absolute inset-0 rounded-full border border-wine/20 scale-110" />
             <div className="absolute inset-0 rounded-full border border-rose/10 scale-125" />
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-wine/20 to-transparent blur-2xl" />
 
-            {/* Profile image container */}
             <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-2 border-wine/50 shadow-2xl shadow-wine/20">
-              <div className="w-full h-full bg-gradient-to-br from-wine/40 to-deep-wine flex items-center justify-center">
-                <div className="text-center">
-                  <div className="font-bebas text-7xl text-blush/20 leading-none">DMR</div>
-                  <p className="text-blush/30 text-xs mt-2 tracking-widest">ADD PHOTO IN ADMIN</p>
+              {profileImage ? (
+                <Image
+                  src={profileImage}
+                  alt="Donna May Rodrigo"
+                  fill
+                  className="object-cover object-top"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-wine/40 to-deep-wine flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="font-bebas text-7xl text-blush/20 leading-none">DMR</div>
+                    <p className="text-blush/30 text-xs mt-2 tracking-widest">ADD PHOTO IN ADMIN</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Floating badges */}
             <div className="absolute -bottom-4 -left-4 bg-deep-wine border border-wine/50 rounded-2xl px-4 py-3 shadow-lg">
               <p className="font-bebas text-rose text-2xl leading-none">3+</p>
               <p className="text-blush/60 text-[10px] tracking-wider uppercase">Years Design</p>
@@ -174,7 +173,6 @@ export default function HeroSection({ settings }: Props) {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <button
         onClick={scrollToAbout}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-blush/30 hover:text-rose transition-colors animate-bounce"

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
-import CreatopiaLogo from './CreatopiaLogo';
+
+const LOGO_URL = 'https://kgqhunnwlcztxxtrwdwp.supabase.co/storage/v1/object/public/logo/a077e282-5b39-4998-8cf5-0221070fef94.jpg';
 
 const navLinks = [
   { href: '#home', label: 'Home' },
@@ -55,7 +57,15 @@ export default function Navbar() {
           onClick={() => handleNavClick('#home')}
           className="flex items-center gap-3 group"
         >
-          <CreatopiaLogo size={38} />
+          <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-blush/5 flex-shrink-0">
+            <Image
+              src={LOGO_URL}
+              alt="Creatopia Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
           <div className="flex flex-col leading-none">
             <span className="font-bebas text-blush text-xl tracking-widest">CREATOPIA</span>
             <span className="text-rose/70 text-[9px] tracking-[0.2em] uppercase font-montserrat">
@@ -82,37 +92,19 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* CTA + Hamburger */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => handleNavClick('#contact')}
-            className="hidden md:block px-5 py-2 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all duration-300"
-          >
-            Hire Me
-          </button>
-
-          {/* Hamburger button */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl border border-wine/30 bg-wine/10 text-blush hover:border-rose/50 hover:bg-wine/30 transition-all"
-            aria-label="Toggle menu"
-          >
-            <span
-              className={`absolute transition-all duration-300 ${
-                menuOpen ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90'
-              }`}
-            >
-              <X size={20} />
-            </span>
-            <span
-              className={`absolute transition-all duration-300 ${
-                menuOpen ? 'opacity-0 -rotate-90' : 'opacity-100 rotate-0'
-              }`}
-            >
-              <Menu size={20} />
-            </span>
-          </button>
-        </div>
+        {/* Hamburger (mobile only) */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl border border-wine/30 bg-wine/10 text-blush hover:border-rose/50 hover:bg-wine/30 transition-all"
+          aria-label="Toggle menu"
+        >
+          <span className={`absolute transition-all duration-300 ${menuOpen ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90'}`}>
+            <X size={20} />
+          </span>
+          <span className={`absolute transition-all duration-300 ${menuOpen ? 'opacity-0 -rotate-90' : 'opacity-100 rotate-0'}`}>
+            <Menu size={20} />
+          </span>
+        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -137,14 +129,6 @@ export default function Navbar() {
                 </button>
               </li>
             ))}
-            <li className="pt-2">
-              <button
-                onClick={() => handleNavClick('#contact')}
-                className="w-full py-3 rounded-full bg-wine text-blush text-xs tracking-widest uppercase font-semibold hover:bg-rose hover:text-near-black transition-all"
-              >
-                Hire Me
-              </button>
-            </li>
           </ul>
         </div>
       </div>
