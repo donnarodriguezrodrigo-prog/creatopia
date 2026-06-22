@@ -9,14 +9,25 @@ interface Props {
   settings: Record<string, string>;
 }
 
+const VIDEO_URL = 'https://kgqhunnwlcztxxtrwdwp.supabase.co/storage/v1/object/public/videos/Dola_2.mp4';
+
 export default function HeroSection({ settings }: Props) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
     el.style.opacity = '1';
     el.style.transform = 'translateY(0)';
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {
+      // Autoplay blocked by browser — silent fail, fallback bg shows
+    });
   }, []);
 
   const scrollToAbout = () => {
@@ -30,9 +41,26 @@ export default function HeroSection({ settings }: Props) {
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden bg-near-black"
     >
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* ===== VIDEO BACKGROUND ===== */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video
+          ref={videoRef}
+          src={VIDEO_URL}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ opacity: 0.18 }}
+        />
+        {/* Dark overlay on top of video */}
+        <div className="absolute inset-0 bg-near-black/75" />
+      </div>
+
+      {/* ===== BRAND WAVE LINES (on top of video) ===== */}
+      <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
         <svg
-          className="absolute right-0 top-0 h-full w-1/2 opacity-20"
+          className="absolute right-0 top-0 h-full w-1/2 opacity-15"
           viewBox="0 0 600 800"
           preserveAspectRatio="none"
           fill="none"
@@ -57,17 +85,25 @@ export default function HeroSection({ settings }: Props) {
             />
           ))}
         </svg>
+        {/* Radial glow */}
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-wine/10 blur-[120px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-deep-wine/20 blur-[80px]" />
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-near-black via-near-black/95 to-near-black pointer-events-none" />
+      {/* ===== GRADIENT OVERLAY ===== */}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-b from-near-black/40 via-transparent to-near-black/80 pointer-events-none" />
 
+      {/* ===== MAIN CONTENT ===== */}
       <div
         ref={heroRef}
         className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center"
-        style={{ opacity: 1, transform: 'translateY(0)', transition: 'opacity 0.8s ease, transform 0.8s ease' }}
+        style={{
+          opacity: 1,
+          transform: 'translateY(0)',
+          transition: 'opacity 0.8s ease, transform 0.8s ease',
+        }}
       >
+        {/* Text Content */}
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-wine/40 bg-wine/10 text-rose text-xs tracking-[0.2em] uppercase font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-rose animate-pulse" />
@@ -97,6 +133,7 @@ export default function HeroSection({ settings }: Props) {
             solutions that elevate your brand and achieve your business objectives.
           </p>
 
+          {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 pt-2">
             <button
               onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}
@@ -112,6 +149,7 @@ export default function HeroSection({ settings }: Props) {
             </button>
           </div>
 
+          {/* Social Links */}
           <div className="flex items-center gap-4 pt-2">
             <span className="text-blush/30 text-xs tracking-widest uppercase">Follow</span>
             <div className="h-px w-8 bg-wine/30" />
@@ -142,6 +180,7 @@ export default function HeroSection({ settings }: Props) {
             <div className="absolute inset-0 rounded-full border border-rose/10 scale-125" />
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-wine/20 to-transparent blur-2xl" />
 
+            {/* Profile image */}
             <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-2 border-wine/50 shadow-2xl shadow-wine/20">
               {profileImage ? (
                 <Image
@@ -161,6 +200,7 @@ export default function HeroSection({ settings }: Props) {
               )}
             </div>
 
+            {/* Floating badges */}
             <div className="absolute -bottom-4 -left-4 bg-deep-wine border border-wine/50 rounded-2xl px-4 py-3 shadow-lg">
               <p className="font-bebas text-rose text-2xl leading-none">3+</p>
               <p className="text-blush/60 text-[10px] tracking-wider uppercase">Years Design</p>
@@ -173,9 +213,10 @@ export default function HeroSection({ settings }: Props) {
         </div>
       </div>
 
+      {/* Scroll indicator */}
       <button
         onClick={scrollToAbout}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-blush/30 hover:text-rose transition-colors animate-bounce"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-blush/30 hover:text-rose transition-colors animate-bounce"
       >
         <span className="text-[10px] tracking-widest uppercase">Scroll</span>
         <ChevronDown size={16} />
