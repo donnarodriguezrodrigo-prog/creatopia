@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { FaLinkedin, FaFacebook, FaYoutube, FaTwitter } from 'react-icons/fa';
 import { ChevronDown } from 'lucide-react';
@@ -11,9 +11,19 @@ interface Props {
 
 const VIDEO_URL = 'https://kgqhunnwlcztxxtrwdwp.supabase.co/storage/v1/object/public/videos/Dola_2.mp4';
 
+const ROTATING_WORDS = [
+  'Assertive',
+  'Goal Oriented',
+  'Decisive',
+  'Opinionated',
+  'Purposeful',
+];
+
 export default function HeroSection({ settings }: Props) {
   const heroRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [currentWord, setCurrentWord] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const el = heroRef.current;
@@ -25,9 +35,19 @@ export default function HeroSection({ settings }: Props) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    video.play().catch(() => {
-      // Autoplay blocked by browser — silent fail, fallback bg shows
-    });
+    video.play().catch(() => {});
+  }, []);
+
+  // Rotating word effect — fade out → change word → fade in
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setCurrentWord((prev) => (prev + 1) % ROTATING_WORDS.length);
+        setVisible(true);
+      }, 500); // half second fade out before switching
+    }, 2500); // change every 2.5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const scrollToAbout = () => {
@@ -41,7 +61,7 @@ export default function HeroSection({ settings }: Props) {
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden bg-near-black"
     >
-      {/* ===== VIDEO BACKGROUND ===== */}
+      {/* VIDEO BACKGROUND */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <video
           ref={videoRef}
@@ -53,11 +73,10 @@ export default function HeroSection({ settings }: Props) {
           className="absolute inset-0 w-full h-full object-cover"
           style={{ opacity: 0.35 }}
         />
-        {/* Dark overlay on top of video */}
         <div className="absolute inset-0 bg-near-black/60" />
       </div>
 
-      {/* ===== BRAND WAVE LINES (on top of video) ===== */}
+      {/* BRAND WAVE LINES */}
       <div className="absolute inset-0 z-[1] overflow-hidden pointer-events-none">
         <svg
           className="absolute right-0 top-0 h-full w-1/2 opacity-15"
@@ -85,15 +104,14 @@ export default function HeroSection({ settings }: Props) {
             />
           ))}
         </svg>
-        {/* Radial glow */}
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-wine/10 blur-[120px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] rounded-full bg-deep-wine/20 blur-[80px]" />
       </div>
 
-      {/* ===== GRADIENT OVERLAY ===== */}
+      {/* GRADIENT OVERLAY */}
       <div className="absolute inset-0 z-[2] bg-gradient-to-b from-near-black/40 via-transparent to-near-black/80 pointer-events-none" />
 
-      {/* ===== MAIN CONTENT ===== */}
+      {/* MAIN CONTENT */}
       <div
         ref={heroRef}
         className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center"
@@ -119,6 +137,23 @@ export default function HeroSection({ settings }: Props) {
               <br />
               <span className="gradient-text">MAY RODRIGO</span>
             </h1>
+
+            {/* ROTATING WORD BANNER */}
+            <div className="flex items-center gap-3 pt-1 h-10">
+              <div className="h-px w-8 bg-wine/50 flex-shrink-0" />
+              <div className="relative overflow-hidden">
+                <span
+                  className="font-bebas text-2xl md:text-3xl tracking-widest text-rose block"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? 'translateY(0)' : 'translateY(6px)',
+                    transition: 'opacity 0.5s ease, transform 0.5s ease',
+                  }}
+                >
+                  {ROTATING_WORDS[currentWord]}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -180,7 +215,6 @@ export default function HeroSection({ settings }: Props) {
             <div className="absolute inset-0 rounded-full border border-rose/10 scale-125" />
             <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-wine/20 to-transparent blur-2xl" />
 
-            {/* Profile image */}
             <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-2 border-wine/50 shadow-2xl shadow-wine/20">
               {profileImage ? (
                 <Image
@@ -200,7 +234,6 @@ export default function HeroSection({ settings }: Props) {
               )}
             </div>
 
-            {/* Floating badges */}
             <div className="absolute -bottom-4 -left-4 bg-deep-wine border border-wine/50 rounded-2xl px-4 py-3 shadow-lg">
               <p className="font-bebas text-rose text-2xl leading-none">3+</p>
               <p className="text-blush/60 text-[10px] tracking-wider uppercase">Years Design</p>
