@@ -51,10 +51,10 @@ export default function HeroSection({ settings }: Props) {
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.18 }}
+          style={{ opacity: 0.35 }}
         />
         {/* Dark overlay on top of video */}
-        <div className="absolute inset-0 bg-near-black/75" />
+        <div className="absolute inset-0 bg-near-black/60" />
       </div>
 
       {/* ===== BRAND WAVE LINES (on top of video) ===== */}
