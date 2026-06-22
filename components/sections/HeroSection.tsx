@@ -29,7 +29,6 @@ export default function HeroSection({ settings }: Props) {
     const el = heroRef.current;
     if (!el) return;
     el.style.opacity = '1';
-    el.style.transform = 'translateY(0)';
   }, []);
 
   useEffect(() => {
@@ -38,15 +37,14 @@ export default function HeroSection({ settings }: Props) {
     video.play().catch(() => {});
   }, []);
 
-  // Rotating word effect — fade out → change word → fade in
   useEffect(() => {
     const interval = setInterval(() => {
       setVisible(false);
       setTimeout(() => {
         setCurrentWord((prev) => (prev + 1) % ROTATING_WORDS.length);
         setVisible(true);
-      }, 500); // half second fade out before switching
-    }, 2500); // change every 2.5 seconds
+      }, 500);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -61,8 +59,8 @@ export default function HeroSection({ settings }: Props) {
       id="home"
       className="relative min-h-screen flex items-center overflow-hidden bg-near-black"
     >
-      {/* VIDEO BACKGROUND */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* VIDEO BACKGROUND — mobile fixed */}
+      <div className="absolute inset-0 z-0">
         <video
           ref={videoRef}
           src={VIDEO_URL}
@@ -70,8 +68,12 @@ export default function HeroSection({ settings }: Props) {
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: 0.35 }}
+          className="absolute inset-0 w-full h-full"
+          style={{
+            opacity: 0.35,
+            objectFit: 'cover',
+            objectPosition: 'center center',
+          }}
         />
         <div className="absolute inset-0 bg-near-black/60" />
       </div>
@@ -115,11 +117,7 @@ export default function HeroSection({ settings }: Props) {
       <div
         ref={heroRef}
         className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-24 pb-16 grid md:grid-cols-2 gap-12 items-center"
-        style={{
-          opacity: 1,
-          transform: 'translateY(0)',
-          transition: 'opacity 0.8s ease, transform 0.8s ease',
-        }}
+        style={{ opacity: 1, transition: 'opacity 0.8s ease' }}
       >
         {/* Text Content */}
         <div className="space-y-6">
@@ -138,21 +136,20 @@ export default function HeroSection({ settings }: Props) {
               <span className="gradient-text">MAY RODRIGO</span>
             </h1>
 
-            {/* ROTATING WORD BANNER */}
-            <div className="flex items-center gap-3 pt-1 h-10">
+            {/* ROTATING WORDS */}
+            <div className="flex items-center gap-3 pt-2 h-10">
               <div className="h-px w-8 bg-wine/50 flex-shrink-0" />
-              <div className="relative overflow-hidden">
-                <span
-                  className="font-bebas text-2xl md:text-3xl tracking-widest text-rose block"
-                  style={{
-                    opacity: visible ? 1 : 0,
-                    transform: visible ? 'translateY(0)' : 'translateY(6px)',
-                    transition: 'opacity 0.5s ease, transform 0.5s ease',
-                  }}
-                >
-                  {ROTATING_WORDS[currentWord]}
-                </span>
-              </div>
+              <span
+                className="font-bebas text-2xl md:text-3xl tracking-widest text-rose"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? 'translateY(0px)' : 'translateY(8px)',
+                  transition: 'opacity 0.5s ease, transform 0.5s ease',
+                  display: 'inline-block',
+                }}
+              >
+                {ROTATING_WORDS[currentWord]}
+              </span>
             </div>
           </div>
 
